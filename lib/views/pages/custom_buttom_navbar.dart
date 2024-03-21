@@ -1,6 +1,5 @@
 import 'package:ecommerce_app/utils/app_assets.dart';
 import 'package:ecommerce_app/utils/app_colors.dart';
-import 'package:ecommerce_app/views/pages/cart_page.dart';
 import 'package:ecommerce_app/views/pages/favorites_page.dart';
 import 'package:ecommerce_app/views/pages/home_page.dart';
 import 'package:ecommerce_app/views/pages/profile_page.dart';
@@ -26,11 +25,10 @@ class _CustomBottomNavbarState extends State<CustomBottomNavbar> {
   }
 
   List<Widget> _buildScreens() {
-    return const [
-      HomePage(),
+    return [
+      const HomePage(),
       FavoritsPage(),
-      CartPage(),
-      ProfilePage(),
+      const ProfilePage(),
     ];
   }
 

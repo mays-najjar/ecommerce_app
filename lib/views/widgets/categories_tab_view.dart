@@ -1,31 +1,10 @@
 import 'package:ecommerce_app/utils/app_colors.dart';
+import 'package:ecommerce_app/view_models/categories_cubit/categories_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CategoriesTabView extends StatelessWidget {
-   CategoriesTabView({super.key});
-
-  final List<Map<String, String>> categories = [
-    {
-      'name': 'Shoes',
-      'image':
-          'https://i.pinimg.com/736x/56/1d/c6/561dc61b6fc231032fe68d4b0302745c.jpg'
-    },
-    {
-      'name': 'Electronics',
-      'image':
-          'https://i.pinimg.com/564x/05/b4/81/05b481cb6b59f8ee52b535c3f84bc638.jpg'
-    },
-    {
-      'name': 'Bags',
-      'image':
-          'https://i.pinimg.com/564x/cc/48/a9/cc48a95cff117225b1b238528fffff65.jpg'
-    },
-    {
-      'name': 'Clothes',
-      'image':
-          'https://threadcurve.com/wp-content/uploads/2020/06/sweater-may142021.jpg'
-    },
-  ];
+  const CategoriesTabView({super.key});
 
   Widget buildCategoryCard(String categoryName, String imageUrl) {
     return Card(
@@ -39,8 +18,7 @@ class CategoriesTabView extends StatelessWidget {
           ),
           Positioned(
             top: 8,
-            right:
-                8, 
+            right: 8,
             child: Text(
               categoryName,
               style: const TextStyle(
@@ -58,13 +36,36 @@ class CategoriesTabView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: categories.length,
-      itemBuilder: (context, index) {
-        final categoryName = categories[index]['name']!;
-        final imageUrl = categories[index]['image']!;
-        return buildCategoryCard(categoryName, imageUrl);
-      },
-    );
+    final cubit = BlocProvider.of<CategoriesCubit>(context);
+
+    return BlocBuilder<CategoriesCubit, CategoriesState>(
+        bloc: cubit,
+        buildWhen: (previous, current) =>
+            current is CategoriesLoading ||
+            current is CategoriesLoaded ||
+            current is CategoriesError,
+        builder: (context, state) {
+          if (state is CategoriesLoading) {
+            return const Center(
+              child: CircularProgressIndicator.adaptive(),
+            );
+          } else if (state is CategoriesError) {
+            return Center(
+              child: Text(state.message),
+            );
+          } else if (state is CategoriesLoaded) {
+            final categories = state.categories;
+            return ListView.builder(
+              itemCount: categories.length,
+              itemBuilder: (context, index) {
+                final categoryName = categories[index].name;
+                final imageUrl = categories[index].imgUrl;
+                return buildCategoryCard(categoryName, imageUrl);
+              },
+            );
+          } else {
+            return const SizedBox(height: 100);
+          }
+        });
   }
 }

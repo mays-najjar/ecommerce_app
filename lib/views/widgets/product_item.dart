@@ -3,10 +3,15 @@ import 'package:ecommerce_app/models/product_item_model.dart';
 import 'package:ecommerce_app/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 
-class ProductItem extends StatelessWidget {
+class ProductItem extends StatefulWidget {
   final ProductItemModel productItem;
   const ProductItem({super.key, required this.productItem});
 
+  @override
+  State<ProductItem> createState() => _ProductItemState();
+}
+
+class _ProductItemState extends State<ProductItem> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -23,7 +28,7 @@ class ProductItem extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: CachedNetworkImage(
-                  imageUrl: productItem.imgUrl,
+                  imageUrl: widget.productItem.imgUrl,
                   fit: BoxFit.contain,
                   placeholder: (context, url) => const Center(
                     child: CircularProgressIndicator.adaptive(),
@@ -44,28 +49,41 @@ class ProductItem extends StatelessWidget {
                   color: Colors.white54,
                 ),
                 child: IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.favorite_border),
+                  onPressed: () {
+                    setState(() {
+                      if (favoritesProducts.contains(widget.productItem)) {
+                        favoritesProducts.remove(widget.productItem);
+                      } else {
+                        favoritesProducts.add(widget.productItem);
+                      }
+                    });
+                  },
+                  icon: Icon(
+                    favoritesProducts.contains(widget.productItem)
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                    color: Theme.of(context).primaryColor,
+                  ),
                 ),
               ),
-            ),
+            )
           ],
         ),
         const SizedBox(height: 4.0),
         Text(
-          productItem.name,
+          widget.productItem.name,
           style: Theme.of(context).textTheme.titleMedium!.copyWith(
                 fontWeight: FontWeight.w600,
               ),
         ),
         Text(
-          productItem.category,
+          widget.productItem.category,
           style: Theme.of(context).textTheme.labelMedium!.copyWith(
                 color: Colors.grey,
               ),
         ),
         Text(
-          '\$${productItem.price}',
+          '\$${widget.productItem.price}',
           style: Theme.of(context).textTheme.titleSmall!.copyWith(
                 fontWeight: FontWeight.w600,
               ),

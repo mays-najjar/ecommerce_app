@@ -1,15 +1,11 @@
 import 'package:ecommerce_app/models/product_item_model.dart';
 import 'package:ecommerce_app/utils/app_colors.dart';
+import 'package:ecommerce_app/view_models/favorites_cubit/favorites_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class FavoritsPage extends StatefulWidget {
-  const FavoritsPage({super.key});
-
-  @override
-  State<FavoritsPage> createState() => _FavoritsPageState();
-}
-
-class _FavoritsPageState extends State<FavoritsPage> {
+class FavoritsPage extends StatelessWidget {
+  FavoritsPage({super.key});
   final List<String> filterOptions = [
     'All',
     'Top Rated',
@@ -21,7 +17,34 @@ class _FavoritsPageState extends State<FavoritsPage> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('FavoritesPage build()');
+    return BlocProvider(
+      create: (context) {
+        final cubitF = FavoritesCubit();
+        cubitF.getFavoritesData();
+        return cubitF;
+      },
+      child: BlocBuilder<FavoritesCubit, FavoritesState>(
+        builder: (context, state) {
+          if (state is FavoritesLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (state is FavoritesLoaded) {
+            return buildFavoritesPage(context, state.favProducts);
+          } else {
+            return const Center(
+              child: Text('Error loading favorites.'),
+            );
+          }
+        },
+      ),
+    );
+  }
+
+  Widget buildFavoritesPage(
+      BuildContext context, List<ProductItemModel> favProducts) {
+    final cubitF = BlocProvider.of<FavoritesCubit>(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -36,9 +59,8 @@ class _FavoritsPageState extends State<FavoritsPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: ElevatedButton(
                       onPressed: () {
-                        setState(() {
-                          selectedFilter = filterOption;
-                        });
+                        cubitF.applyFilter(filterOption);
+                        selectedFilter = filterOption;
                       },
                       style: ButtonStyle(
                         shape: MaterialStateProperty.all<OutlinedBorder>(
@@ -79,7 +101,7 @@ class _FavoritsPageState extends State<FavoritsPage> {
                 crossAxisSpacing: 4.0,
                 mainAxisSpacing: 4.0,
               ),
-              itemCount: dummyProducts.length,
+              itemCount: favProducts.length,
               itemBuilder: (context, index) {
                 return buildProductCard(context, index);
               },
@@ -91,6 +113,11 @@ class _FavoritsPageState extends State<FavoritsPage> {
   }
 
   Widget buildProductCard(BuildContext context, int index) {
+    final cubit = BlocProvider.of<FavoritesCubit>(context);
+    final favProducts = cubit.state is FavoritesLoaded
+        ? (cubit.state as FavoritesLoaded).favProducts
+        : [];
+
     return Card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -101,7 +128,7 @@ class _FavoritsPageState extends State<FavoritsPage> {
               GestureDetector(
                 onTap: () {},
                 child: Image.network(
-                  dummyProducts[index].imgUrl,
+                  favProducts[index].imgUrl,
                   height: 100,
                   width: double.infinity,
                   fit: BoxFit.cover,
@@ -109,9 +136,7 @@ class _FavoritsPageState extends State<FavoritsPage> {
               ),
               IconButton(
                 onPressed: () {
-                  setState(() {
-                    dummyProducts.remove(dummyProducts[index]);
-                  });
+                  cubit.removeFromFavorites(index);
                 },
                 icon: const Icon(Icons.favorite),
                 iconSize: 20.0,
@@ -121,12 +146,12 @@ class _FavoritsPageState extends State<FavoritsPage> {
           ),
           const SizedBox(height: 8.0),
           Text(
-            dummyProducts[index].name,
+            favProducts[index].name,
             style: Theme.of(context).textTheme.titleSmall,
             textAlign: TextAlign.center,
           ),
           Text(
-            dummyProducts[index].category,
+            favProducts[index].category,
             style: Theme.of(context)
                 .textTheme
                 .labelSmall!
@@ -134,7 +159,7 @@ class _FavoritsPageState extends State<FavoritsPage> {
             textAlign: TextAlign.center,
           ),
           Text(
-            '\$${dummyProducts[index].price}',
+            '\$${favProducts[index].price}',
             style: Theme.of(context).textTheme.labelSmall,
             textAlign: TextAlign.center,
           ),

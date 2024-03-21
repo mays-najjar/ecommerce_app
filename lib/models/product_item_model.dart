@@ -48,6 +48,8 @@ class ProductItemModel {
     );
   }
 }
+List<ProductItemModel> favoritesProducts = [];
+List<ProductItemModel> cartProducts = [];
 
 List<ProductItemModel> dummyProducts = [
   ProductItemModel(
