@@ -1,6 +1,5 @@
-/*import 'package:ecommerce_app/utils/app_colors.dart';
+import 'package:ecommerce_app/utils/app_colors.dart';
 import 'package:ecommerce_app/view_models/cart_cubit/cart_cubit.dart';
-import 'package:ecommerce_app/views/widgets/cart_item_widget.dart';
 import 'package:ecommerce_app/views/widgets/main_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,7 +9,6 @@ class CartPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return BlocBuilder<CartCubit, CartState>(
       bloc: BlocProvider.of<CartCubit>(context),
       buildWhen: (previous, current) =>
@@ -37,8 +35,6 @@ class CartPage extends StatelessWidget {
                   },
                 ),
                 const SizedBox(height: 24),
-             
-               
                 const SizedBox(height: 36),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -46,9 +42,7 @@ class CartPage extends StatelessWidget {
                     width: double.infinity,
                     height: 50,
                     child: MainButton(
-                      onPressed: () {
-                         
-                      },
+                      onPressed: () {},
                       child: const Text('Checkout'),
                     ),
                   ),
@@ -92,4 +86,4 @@ class CartPage extends StatelessWidget {
       ),
     );
   }
-}*/
+}

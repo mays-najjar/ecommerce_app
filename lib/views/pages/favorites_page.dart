@@ -24,6 +24,10 @@ class FavoritsPage extends StatelessWidget {
         return cubitF;
       },
       child: BlocBuilder<FavoritesCubit, FavoritesState>(
+        buildWhen: (previous, current) =>
+            current is FavoritesLoaded ||
+            current is FavoritesLoading ||
+            current is FavoritesError,
         builder: (context, state) {
           if (state is FavoritesLoading) {
             return const Center(
@@ -31,10 +35,12 @@ class FavoritsPage extends StatelessWidget {
             );
           } else if (state is FavoritesLoaded) {
             return buildFavoritesPage(context, state.favProducts);
-          } else {
-            return const Center(
-              child: Text('Error loading favorites.'),
+          } else if (state is FavoritesError) {
+            return Center(
+              child: Text(state.message),
             );
+          } else {
+            return const SizedBox.shrink();
           }
         },
       ),

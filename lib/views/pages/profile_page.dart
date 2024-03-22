@@ -1,10 +1,51 @@
+import 'package:ecommerce_app/models/profile_details.dart';
+import 'package:ecommerce_app/view_models/profile_cubit/profile_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) {
+        final cubitP = ProfileCubit();
+        cubitP.getProfileData();
+        return cubitP;
+      },
+      child: BlocBuilder<ProfileCubit, ProfileState>(
+           buildWhen: (previous, current) =>
+          current is ProfileLoaded ||
+          current is ProfileLoading ||
+          current is ProfileError,
+        builder: (context, state) {
+          if (state is ProfileLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (state is ProfileLoaded) {
+            return buildPProfilePage(context, state.profile);
+          } else if (state is ProfileError) {
+            return  Center(
+             child: Text(state.message),
+            );
+          } else {
+             return const SizedBox.shrink();
+          }
+        },
+      ),
+    );
+  }
+
+  Widget buildPProfilePage(
+      BuildContext context, List<ProfileDetails> favProducts) {
+    int index = 0;
+    final cubitP = BlocProvider.of<ProfileCubit>(context);
+    final profile = cubitP.state is ProfileLoaded
+        ? (cubitP.state as ProfileLoaded).profile
+        : [];
+
     return SafeArea(
       child: SingleChildScrollView(
         child: Center(
@@ -14,38 +55,38 @@ class ProfilePage extends StatelessWidget {
               const SizedBox(height: 50.0),
               Center(
                 child: Container(
-                  width: 300,
+                  width: 200,
                   height: 200,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.rectangle,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
                     image: DecorationImage(
                       fit: BoxFit.cover,
                       image: NetworkImage(
-                        'https://i.pinimg.com/736x/9d/0c/dd/9d0cdd6ec0f42e148ecfa1622ea8e261.jpg',
+                        profile[index].imgUrl,
                       ),
                     ),
                   ),
                 ),
               ),
               const SizedBox(height: 40.0),
-              const Row(
+              Row(
                 children: [
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     child: Text(
-                      'Mays Khalil',
-                      style: TextStyle(
+                      profile[index].name,
+                      style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                  SizedBox(height: 30, child: VerticalDivider()),
+                  const SizedBox(height: 30, child: VerticalDivider()),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     child: Text(
-                      'Palestine, Qalqilia',
-                      style: TextStyle(
+                      profile[index].country,
+                      style: const TextStyle(
                         fontSize: 18,
                         color: Colors.black45,
                       ),
