@@ -4,6 +4,7 @@ import 'package:ecommerce_app/view_models/favorites_cubit/favorites_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+// ignore: must_be_immutable
 class FavoritsPage extends StatelessWidget {
   FavoritsPage({super.key});
   final List<String> filterOptions = [

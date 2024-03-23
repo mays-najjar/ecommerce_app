@@ -29,7 +29,7 @@ class _CustomBottomNavbarState extends State<CustomBottomNavbar> {
     return [
       const HomePage(),
       FavoritsPage(),
-      const CartPage(), // Add another screen widget
+       CartPage(),
       const ProfilePage(),
     ];
   }

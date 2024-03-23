@@ -35,7 +35,6 @@ class ProductItemModel {
     String? category,
     double? averageRate,
     int? quantity,
-    ProductSize? size,
   }) {
     return ProductItemModel(
       id: id ?? this.id,

@@ -9,99 +9,136 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProductDetailsPage extends StatelessWidget {
-  final ProductItemModel product;
-  const ProductDetailsPage({super.key, required this.product});
+  const ProductDetailsPage({super.key});
 
- 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-        final cubit = BlocProvider.of<ProductDetailsCubit>(context);
+    final cubit = BlocProvider.of<ProductDetailsCubit>(context);
 
-
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: AppColors.transparent,
-        actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.favorite_border))
-        ],
-      ),
-      body: SafeArea(
-        top: false,
-        child: Stack(
-          children: [
-            Container(
-              width: double.infinity,
-              height: size.height * 0.6,
-              decoration: BoxDecoration(color: AppColors.grey2),
-              child: CachedNetworkImage(
-                imageUrl: product.imgUrl,
-                fit: BoxFit.contain,
-              ),
+    return BlocBuilder<ProductDetailsCubit, ProductDetailsState>(
+      bloc: cubit,
+      buildWhen: (previous, current) =>
+          current is ProductDetailsLoaded ||
+          current is ProductDetailsLoading ||
+          current is ProductDetailsError,
+      builder: (context, state) {
+        if (state is ProductDetailsLoading) {
+          return const Scaffold(
+              body: Center(
+            child: CircularProgressIndicator(),
+          ));
+        } else if (state is ProductDetailsError) {
+          return Scaffold(
+              body: Center(
+            child: Text(state.message),
+          ));
+        } else if (state is ProductDetailsLoaded) {
+          final product = state.product;
+          return Scaffold(
+            extendBodyBehindAppBar: true,
+            appBar: AppBar(
+              backgroundColor: AppColors.transparent,
+              actions: [
+                IconButton(
+                    onPressed: () {}, icon: const Icon(Icons.favorite_border))
+              ],
             ),
-            Padding(
-              padding: EdgeInsets.only(top: size.height * .45),
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(30),
-                decoration: const BoxDecoration(
-                    color: AppColors.white,
-                    borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(50))),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              product.name,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium!
-                                  .copyWith(
-                                    fontWeight: FontWeight.bold,
+            body: SafeArea(
+              top: false,
+              child: Stack(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    height: size.height * 0.6,
+                    decoration: BoxDecoration(color: AppColors.grey2),
+                    child: CachedNetworkImage(
+                      imageUrl: product.imgUrl,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: size.height * .45),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(30),
+                      decoration: const BoxDecoration(
+                          color: AppColors.white,
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(50))),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    product.name,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium!
+                                        .copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                   ),
-                            ),
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.star,
-                                  color: AppColors.yellow,
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  product.averageRate.toString(),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineSmall!
-                                      .copyWith(
-                                        fontWeight: FontWeight.bold,
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.star,
+                                        color: AppColors.yellow,
                                       ),
-                                )
-                              ],
-                            ),
-                          ],
-                        ),
-                        const CounterWidget(),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      'Size',
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium!
-                          .copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: ProductSize.values
-                          .map((size) => BlocBuilder<ProductDetailsCubit,
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        product.averageRate.toString(),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headlineSmall!
+                                            .copyWith(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                      )
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              BlocBuilder<ProductDetailsCubit,
+                                  ProductDetailsState>(
+                                bloc: cubit,
+                                buildWhen: (previous, current) =>
+                                    current is QuantityChanged,
+                                builder: (context, state) {
+                                  if (state is QuantityChanged) {
+                                    final counter = state.quantity;
+                                    return CounterWidget(
+                                      cubit: cubit,
+                                      counter: counter,
+                                    );
+                                  } else {
+                                    return CounterWidget(
+                                      cubit: cubit,
+                                      counter: 1,
+                                    );
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            'Size',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: ProductSize.values
+                                .map(
+                                  (size) => BlocBuilder<ProductDetailsCubit,
                                       ProductDetailsState>(
                                     bloc: cubit,
                                     buildWhen: (previous, current) =>
@@ -172,38 +209,41 @@ class ProductDetailsPage extends StatelessWidget {
                                 )
                                 .toList(),
                           ),
-                    const SizedBox(height: 10),
-                    Text(
-                      'Details',
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium!
-                          .copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      product.description,
-                      style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                            color: AppColors.grey,
+                          const SizedBox(height: 10),
+                          Text(
+                            'Details',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(fontWeight: FontWeight.bold),
                           ),
-                    ),
-                    const Spacer(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '\$${product.price}',
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineSmall!
-                              .copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.primary,
+                          const SizedBox(height: 8),
+                          Text(
+                            product.description,
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelLarge!
+                                .copyWith(
+                                  color: AppColors.grey,
+                                ),
+                          ),
+                          const Spacer(),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                '\$${product.price}',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headlineSmall!
+                                    .copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.primary,
+                                    ),
                               ),
-                        ),
-                        SizedBox(
-                          height: 40,
-                           child: BlocConsumer<ProductDetailsCubit,
+                              SizedBox(
+                                height: 40,
+                                child: BlocConsumer<ProductDetailsCubit,
                                     ProductDetailsState>(
                                   bloc: cubit,
                                   listenWhen: (previous, current) =>
@@ -215,10 +255,12 @@ class ProductDetailsPage extends StatelessWidget {
                                         builder: (context) {
                                           return AlertDialog(
                                             title: const Text('Alert!'),
-                                            content: const Text('You must select a size before adding to cart!'),
+                                            content: const Text(
+                                                'You must select a size before adding to cart!'),
                                             actions: [
                                               TextButton(
-                                                onPressed: () => Navigator.pop(context),
+                                                onPressed: () =>
+                                                    Navigator.pop(context),
                                                 child: const Text('OK'),
                                               ),
                                             ],
@@ -228,8 +270,8 @@ class ProductDetailsPage extends StatelessWidget {
                                     }
                                   },
                                   buildWhen: (previous, current) =>
-                                    
                                       current is AddedToCart ||
+                                      current is AddingToCart ||
                                       current is AddToCartError,
                                   builder: (context, state) {
                                     if (state is AddingToCart) {
@@ -281,8 +323,13 @@ class ProductDetailsPage extends StatelessWidget {
               ),
             ),
           );
+        } else {
+          return const Scaffold(
+              body: Center(
+            child: Text('Error Page!!'),
+          ));
         }
-      }
-    
-    
-
+      },
+    );
+  }
+}

@@ -28,6 +28,10 @@ final class AddToCartError extends ProductDetailsState {
   AddToCartError(this.message);
 }
 
+final class QuantityChanged extends ProductDetailsState {
+  final int quantity;
+  QuantityChanged(this.quantity);
+}
 
 final class SizeChanged extends ProductDetailsState {
   final ProductSize size;
