@@ -30,6 +30,7 @@ final class AddToCartError extends ProductDetailsState {
 
 final class QuantityChanged extends ProductDetailsState {
   final int quantity;
+
   QuantityChanged(this.quantity);
 }
 

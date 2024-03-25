@@ -1,5 +1,9 @@
 import 'package:ecommerce_app/models/profile_details.dart';
+import 'package:ecommerce_app/services/auth_services.dart';
+import 'package:ecommerce_app/utils/route/app_routes.dart';
+import 'package:ecommerce_app/view_models/auth_cubit/auth_cubit.dart';
 import 'package:ecommerce_app/view_models/profile_cubit/profile_cubit.dart';
+import 'package:ecommerce_app/views/widgets/main_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -8,43 +12,36 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) {
-        final cubitP = ProfileCubit();
-        cubitP.getProfileData();
-        return cubitP;
-      },
-      child: BlocBuilder<ProfileCubit, ProfileState>(
-           buildWhen: (previous, current) =>
+    final cubit = BlocProvider.of<ProfileCubit>(context);
+
+    return BlocBuilder<ProfileCubit, ProfileState>(
+      bloc: cubit,
+      buildWhen: (previous, current) =>
           current is ProfileLoaded ||
           current is ProfileLoading ||
           current is ProfileError,
-        builder: (context, state) {
-          if (state is ProfileLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (state is ProfileLoaded) {
-            return buildPProfilePage(context, state.profile);
-          } else if (state is ProfileError) {
-            return  Center(
-             child: Text(state.message),
-            );
-          } else {
-             return const SizedBox.shrink();
-          }
-        },
-      ),
+      builder: (context, state) {
+        if (state is ProfileLoading) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (state is ProfileLoaded) {
+          final profile = state.profile;
+
+          return buildPProfilePage(context, profile);
+        } else if (state is ProfileError) {
+          return Center(
+            child: Text(state.message),
+          );
+        } else {
+          return const SizedBox.shrink();
+        }
+      },
     );
   }
 
-  Widget buildPProfilePage(
-      BuildContext context, List<ProfileDetails> favProducts) {
-    int index = 0;
-    final cubitP = BlocProvider.of<ProfileCubit>(context);
-    final profile = cubitP.state is ProfileLoaded
-        ? (cubitP.state as ProfileLoaded).profile
-        : [];
+  Widget buildPProfilePage(BuildContext context, ProfileDetails profile) {
+    final authCubit = BlocProvider.of<AuthCubit>(context);
 
     return SafeArea(
       child: SingleChildScrollView(
@@ -62,7 +59,7 @@ class ProfilePage extends StatelessWidget {
                     image: DecorationImage(
                       fit: BoxFit.cover,
                       image: NetworkImage(
-                        profile[index].imgUrl,
+                        profile.imgUrl,
                       ),
                     ),
                   ),
@@ -74,7 +71,7 @@ class ProfilePage extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     child: Text(
-                      profile[index].name,
+                      profile.name,
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -85,7 +82,7 @@ class ProfilePage extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     child: Text(
-                      profile[index].country,
+                      profile.country,
                       style: const TextStyle(
                         fontSize: 18,
                         color: Colors.black45,
@@ -114,10 +111,42 @@ class ProfilePage extends StatelessWidget {
                 title: const Text('Personal Details'),
                 onTap: () {},
               ),
-              ListTile(
-                leading: const Icon(Icons.exit_to_app),
-                title: const Text('Logout'),
-                onTap: () {},
+              BlocConsumer<AuthCubit, AuthState>(
+                bloc: authCubit,
+                listenWhen: (previous, current) =>
+                    current is AuthFailure || current is AuthInitial,
+                listener: (context, state) {
+                  if (state is AuthFailure) {
+                    ScaffoldMessenger.of(context)
+                      ..hideCurrentSnackBar()
+                      ..showSnackBar(
+                        SnackBar(
+                          content: Text(state.message),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                  } else if (state is AuthInitial) {
+                    // Navigator.of(context).pop();
+                    Navigator.of(context, rootNavigator: true)
+                        .pushReplacementNamed(AppRoutes.homeLogin);
+                  }
+                },
+                buildWhen: (previous, current) =>
+                    current is AuthLoading || current is AuthFailure,
+                builder: (context, state) {
+                  if (state is AuthLoading) {
+                    return const MainButton(
+                      child: CircularProgressIndicator.adaptive(),
+                    );
+                  }
+                  return ListTile(
+                    leading: const Icon(Icons.exit_to_app),
+                    title: const Text('Logout'),
+                    onTap: () async {
+                      await authCubit.signOut();
+                    },
+                  );
+                },
               ),
             ],
           ),

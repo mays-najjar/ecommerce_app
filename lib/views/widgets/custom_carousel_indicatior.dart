@@ -54,7 +54,7 @@ class _CustomCarouselIndicatorState extends State<CustomCarouselIndicator> {
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: dummyAnnouncements.asMap().entries.map((entry) {
+          children:  widget.announcements.asMap().entries.map((entry) {
             return GestureDetector(
               onTap: () => _controller.animateToPage(entry.key),
               child: Container(

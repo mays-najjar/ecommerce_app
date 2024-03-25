@@ -1,12 +1,17 @@
+import 'package:ecommerce_app/models/announcement_model.dart';
+import 'package:ecommerce_app/models/product_item_model.dart';
+import 'package:ecommerce_app/services/firebase_services.dart';
+import 'package:ecommerce_app/utils/api_paths.dart';
 import 'package:ecommerce_app/utils/app_assets.dart';
 import 'package:ecommerce_app/utils/app_colors.dart';
+import 'package:ecommerce_app/view_models/cart_cubit/cart_cubit.dart';
+import 'package:ecommerce_app/view_models/profile_cubit/profile_cubit.dart';
 import 'package:ecommerce_app/views/pages/cart_page.dart';
 import 'package:ecommerce_app/views/pages/favorites_page.dart';
 import 'package:ecommerce_app/views/pages/home_page.dart';
 import 'package:ecommerce_app/views/pages/profile_page.dart';
-import 'package:ecommerce_app/views/pages/search_page.dart';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
 class CustomBottomNavbar extends StatefulWidget {
@@ -18,19 +23,42 @@ class CustomBottomNavbar extends StatefulWidget {
 
 class _CustomBottomNavbarState extends State<CustomBottomNavbar> {
   late PersistentTabController _controller;
+  final FirestoreService _firestoreService = FirestoreService.instance;
 
   @override
   void initState() {
     super.initState();
     _controller = PersistentTabController();
+    sendD();
+  }
+
+  Future<void> sendD() async {
+    dummyAnnouncements.forEach((nnouncement) async {
+      await _firestoreService.setData(
+          path: ApiPaths.ann(nnouncement.id), data: nnouncement.toMap());
+    });
   }
 
   List<Widget> _buildScreens() {
     return [
       const HomePage(),
       FavoritsPage(),
-       CartPage(),
-      const ProfilePage(),
+      BlocProvider(
+        create: (context) {
+          final cubit = CartCubit();
+          cubit.getCartItems();
+          return cubit;
+        },
+        child: const CartPage(),
+      ),
+      BlocProvider(
+        create: (context) {
+          final cubit = ProfileCubit();
+          cubit.getProfileData('F3G0pNxm3V1S37o6cNA9');
+          return cubit;
+        },
+        child: const ProfilePage(),
+      ),
     ];
   }
 
@@ -74,13 +102,15 @@ class _CustomBottomNavbarState extends State<CustomBottomNavbar> {
         leading: const Padding(
           padding: EdgeInsets.all(4.0),
           child: CircleAvatar(
-              radius: 30, backgroundImage: NetworkImage(AppAssets.userImage)),
+            radius: 30,
+            backgroundImage: NetworkImage(AppAssets.userImage),
+          ),
         ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Hi, Mays',
+              'Hi, Tarek',
               style: Theme.of(context).textTheme.labelLarge!.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -95,13 +125,8 @@ class _CustomBottomNavbarState extends State<CustomBottomNavbar> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SearchPage()),
-              );
-            },
+            onPressed: () {},
+            icon: const Icon(Icons.search),
           ),
           IconButton(
             onPressed: () {},
@@ -134,7 +159,7 @@ class _CustomBottomNavbarState extends State<CustomBottomNavbar> {
           duration: Duration(milliseconds: 200),
         ),
         navBarStyle:
-            NavBarStyle.style9, // Choose the nav bar style with this property.
+            NavBarStyle.style3, // Choose the nav bar style with this property.
       ),
     );
   }

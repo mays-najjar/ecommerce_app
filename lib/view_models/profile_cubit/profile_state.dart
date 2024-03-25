@@ -6,7 +6,7 @@ final class ProfileInitial extends ProfileState {}
 final class ProfileLoading extends ProfileState {}
 
 final class ProfileLoaded extends ProfileState {
-  final List<ProfileDetails> profile;
+  final ProfileDetails profile;
   ProfileLoaded(this.profile);
 }
 

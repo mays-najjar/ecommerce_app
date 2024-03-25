@@ -3,9 +3,7 @@ import 'package:ecommerce_app/models/product_item_model.dart';
 import 'package:ecommerce_app/utils/app_colors.dart';
 import 'package:ecommerce_app/view_models/product_details_cubit/product_details_cubit.dart';
 import 'package:ecommerce_app/views/widgets/counter_widget.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProductDetailsPage extends StatelessWidget {
@@ -299,7 +297,7 @@ class ProductDetailsPage extends StatelessWidget {
                                       );
                                     } else {
                                       return ElevatedButton(
-                                        onPressed: () async =>
+                                          onPressed: () async =>
                                             await cubit.addToCart(product.id),
                                         style: ElevatedButton.styleFrom(
                                             backgroundColor: AppColors.primary,
