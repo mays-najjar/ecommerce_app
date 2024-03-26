@@ -1,4 +1,3 @@
-
 import 'package:ecommerce_app/utils/app_assets.dart';
 import 'package:ecommerce_app/utils/app_colors.dart';
 import 'package:ecommerce_app/view_models/cart_cubit/cart_cubit.dart';
@@ -7,6 +6,7 @@ import 'package:ecommerce_app/views/pages/cart_page.dart';
 import 'package:ecommerce_app/views/pages/favorites_page.dart';
 import 'package:ecommerce_app/views/pages/home_page.dart';
 import 'package:ecommerce_app/views/pages/profile_page.dart';
+import 'package:ecommerce_app/views/pages/search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
@@ -27,7 +27,6 @@ class _CustomBottomNavbarState extends State<CustomBottomNavbar> {
     _controller = PersistentTabController();
   }
 
- 
   List<Widget> _buildScreens() {
     return [
       const HomePage(),
@@ -114,8 +113,13 @@ class _CustomBottomNavbarState extends State<CustomBottomNavbar> {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.search),
+            icon: Icon(Icons.search),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SearchPage()),
+              );
+            },
           ),
           IconButton(
             onPressed: () {},
