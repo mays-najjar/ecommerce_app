@@ -148,7 +148,7 @@ class _CustomBottomNavbarState extends State<CustomBottomNavbar> {
           duration: Duration(milliseconds: 200),
         ),
         navBarStyle:
-            NavBarStyle.style3, // Choose the nav bar style with this property.
+            NavBarStyle.style9, // Choose the nav bar style with this property.
       ),
     );
   }
