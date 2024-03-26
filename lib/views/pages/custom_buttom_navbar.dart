@@ -99,7 +99,7 @@ class _CustomBottomNavbarState extends State<CustomBottomNavbar> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Hi, Tarek',
+              'Hi, Mays',
               style: Theme.of(context).textTheme.labelLarge!.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
