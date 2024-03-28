@@ -1,31 +1,56 @@
 import 'package:ecommerce_app/models/product_item_model.dart';
+import 'package:ecommerce_app/services/auth_services.dart';
+import 'package:ecommerce_app/services/favorites_services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'favorites_state.dart';
 
 class FavoritesCubit extends Cubit<FavoritesState> {
   FavoritesCubit() : super(FavoritesInitial());
-  final favProducts = favoritesProducts;
   List<ProductItemModel> filteredProducts = [];
+  final authServices = AuthServicesImpl();
+  final favoritesServices = FavoritesServicesImpl();
 
-  void getFavoritesData() {
+  void getFavoritesData() async{
     emit(FavoritesLoading());
     try {
-      emit(FavoritesLoaded(favProducts));
+     final currentUser = await authServices.currentUser();
+      final favoritesProduct = await favoritesServices.getFavoritesItems(currentUser!.uid);
+      emit(FavoritesLoaded(
+        favProducts: favoritesProduct,
+      ));
     } catch (e) {
-      emit(FavoritesError(e.toString()));
+      emit(
+        FavoritesError(message : e.toString())
+      );
     }
   }
 
-  void removeFromFavorites(int index) {
-    favProducts.removeAt(index);
-    emit(FavoritesLoaded(favProducts));
-  }
 
-  void applyFilter(String filterOption) {
+  Future<void> removeFromFavorites(String productId) async {
+    emit(FavoritesLoading());
+    try {
+    final currentUser = await authServices.currentUser();
+    await favoritesServices.removeFromFavorites(currentUser!.uid, productId);
+
+      final favoritesProduct = await favoritesServices.getFavoritesItems(currentUser!.uid);
+    
+     emit(FavoritesLoaded(
+        favProducts: favoritesProduct,
+      ));
+    } catch (e) {
+      emit(
+        FavoritesError(message : e.toString())
+      );
+    }
+  }
+ 
+  void applyFilter(String filterOption) async {
+    final currentUser = await authServices.currentUser();
+      final favoritesProduct = await favoritesServices.getFavoritesItems(currentUser!.uid);
     switch (filterOption) {
       case 'All':
-        filteredProducts = List.from(favProducts);
+        filteredProducts = List.from(favoritesProduct);
         break;
       case 'Top Rated':
         break;
@@ -36,6 +61,6 @@ class FavoritesCubit extends Cubit<FavoritesState> {
       case 'Most Expensive':
         break;
     }
-    emit(FavoritesLoaded(filteredProducts));
+    emit(FavoritesLoaded(favProducts: favoritesProduct));
   }
 }

@@ -39,3 +39,4 @@ final class SizeChanged extends ProductDetailsState {
 
   SizeChanged(this.size);
 }
+

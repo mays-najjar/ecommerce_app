@@ -28,24 +28,18 @@ class CartCubit extends Cubit<CartState> {
     }
   }
 
-  // void removeFromCart(String productId) {
-  //   emit(CartLoading());
-  //   final index = dummyProducts.indexWhere((item) => item.id == productId);
-  //   dummyProducts[index] = dummyProducts[index].copyWith(
-  //     isAddedToCart: false,
-  //     quantity: 0,
-  //     size: null,
-  //   );
-  //   final cartItems =
-  //       dummyProducts.where((item) => item.isAddedToCart == true).toList();
-  //   final subTotal = cartItems.fold<double>(0, (sum, item) => sum + item.price);
-  //   Future.delayed(const Duration(seconds: 1), () {
-  //     emit(CartLoaded(
-  //       cartItems: cartItems,
-  //       subtotal: subTotal,
-  //     ));
-  //   });
-  // }
+  Future<void> removeFromCart(String productId) async {
+    emit(CartLoading());
+    final currentUser = await authServices.currentUser();
+    await cartServices.removeFromCart(currentUser!.uid, productId);
+    final cartItems = await cartServices.getCartItems(currentUser.uid);
+    final subTotal = cartItems.fold<double>(
+        0, (sum, item) => sum + (item.product.price * item.quantity));
+    emit(CartLoaded(
+      cartItems: cartItems,
+      subtotal: subTotal,
+    ));
+  }
 
   Future<void> incrementCounter(CartOrdersModel cartOrder) async {
     emit(QuantityCounterLoading(cartOrderId: cartOrder.id));

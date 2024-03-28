@@ -143,7 +143,7 @@ class FavoritsPage extends StatelessWidget {
               ),
               IconButton(
                 onPressed: () {
-                  cubit.removeFromFavorites(index);
+                  cubit.removeFromFavorites(favProducts[index].id);
                 },
                 icon: const Icon(Icons.favorite),
                 iconSize: 20.0,

@@ -8,13 +8,13 @@ final class FavoritesLoading extends FavoritesState {}
 final class FavoritesLoaded extends FavoritesState {
   final List<ProductItemModel> favProducts;
 
-  FavoritesLoaded(this.favProducts);
+  FavoritesLoaded({required this.favProducts} );
 }
 
 final class FavoritesError extends FavoritesState {
   final String message;
 
-  FavoritesError(this.message);
+  FavoritesError({required this.message});
 }
 final class RemoveFromFavorites extends FavoritesState {
 

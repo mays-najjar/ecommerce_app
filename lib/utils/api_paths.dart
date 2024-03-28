@@ -13,4 +13,8 @@ class ApiPaths {
   static String cartItems(String uid) => 'users/$uid/cartItems/';
   static String profiles() => 'profiles/';
   static String profile(String id) => 'profiles/$id';
+  static String favItem(String uid, String favItemId) =>
+      'users/$uid/favItems/$favItemId';
+      static String favItems(String uid) =>
+      'users/$uid/favItems/';
 }
