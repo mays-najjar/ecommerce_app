@@ -1,7 +1,7 @@
 class ProfileDetails {
   final String id;
   final String name;
-  final String imgUrl;
+  final String photoUrl;
   final int age;
   final String country;
   final String email;
@@ -9,7 +9,7 @@ class ProfileDetails {
   ProfileDetails(
       {required this.id,
       required this.name,
-      required this.imgUrl,
+      required this.photoUrl,
       required this.age,
       required this.country,
       required this.email});
@@ -18,7 +18,7 @@ class ProfileDetails {
 
     result.addAll({'id': id});
     result.addAll({'name': name});
-    result.addAll({'imgUrl': imgUrl});
+    result.addAll({'photoUrl': photoUrl});
     result.addAll({'age': age});
     result.addAll({'country': country});
     result.addAll({'email': email});
@@ -30,7 +30,7 @@ class ProfileDetails {
     return ProfileDetails(
       id: documentId,
       name: map['name'] ?? '',
-      imgUrl: map['imgUrl'] ?? '',
+      photoUrl: map['photoUrl'] ?? '',
       age: map['age'] ?? 0,
       country: map['country'] ?? '',
       email: map['email'] ?? '',

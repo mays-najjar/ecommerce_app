@@ -130,7 +130,7 @@ class CartItemWidget extends StatelessWidget {
                                 ),
                         children: [
                           TextSpan(
-                            text: cartOrderItemOriginal.size!.name,
+                            text: cartOrderItemOriginal.size.name,
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
                         ],

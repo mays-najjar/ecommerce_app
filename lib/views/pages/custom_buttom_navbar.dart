@@ -42,7 +42,7 @@ class _CustomBottomNavbarState extends State<CustomBottomNavbar> {
       BlocProvider(
         create: (context) {
           final cubit = ProfileCubit();
-          cubit.getProfileData('F3G0pNxm3V1S37o6cNA9');
+          cubit.getProfileData();
           return cubit;
         },
         child: const ProfilePage(),
@@ -113,11 +113,11 @@ class _CustomBottomNavbarState extends State<CustomBottomNavbar> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.search),
+            icon: const Icon(Icons.search),
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => SearchPage()),
+                MaterialPageRoute(builder: (context) => const SearchPage()),
               );
             },
           ),

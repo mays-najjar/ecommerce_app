@@ -11,7 +11,8 @@ class AuthCubit extends Cubit<AuthState> {
   Future<void> signInWithEmailAndPassword(String email, String password) async {
     emit(AuthLoading());
     try {
-      final result = await authServices.signInWithEmailAndPassword(email, password);
+      final result =
+          await authServices.signInWithEmailAndPassword(email, password);
       if (result) {
         emit(AuthSuccess());
       } else {
@@ -25,7 +26,8 @@ class AuthCubit extends Cubit<AuthState> {
   Future<void> signUpWithEmailAndPassword(String email, String password) async {
     emit(AuthLoading());
     try {
-      final result = await authServices.signUpWithEmailAndPassword(email, password);
+      final result =
+          await authServices.signUpWithEmailAndPassword(email, password);
       if (result) {
         emit(AuthSuccess());
       } else {

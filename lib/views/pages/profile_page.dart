@@ -1,8 +1,10 @@
 import 'package:ecommerce_app/models/profile_details.dart';
 import 'package:ecommerce_app/services/auth_services.dart';
+import 'package:ecommerce_app/utils/app_colors.dart';
 import 'package:ecommerce_app/utils/route/app_routes.dart';
 import 'package:ecommerce_app/view_models/auth_cubit/auth_cubit.dart';
 import 'package:ecommerce_app/view_models/profile_cubit/profile_cubit.dart';
+import 'package:ecommerce_app/views/pages/settings_page.dart';
 import 'package:ecommerce_app/views/widgets/main_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -59,7 +61,7 @@ class ProfilePage extends StatelessWidget {
                     image: DecorationImage(
                       fit: BoxFit.cover,
                       image: NetworkImage(
-                        profile.imgUrl,
+                        profile.photoUrl,
                       ),
                     ),
                   ),
@@ -108,8 +110,12 @@ class ProfilePage extends StatelessWidget {
               ),
               ListTile(
                 leading: const Icon(Icons.settings),
-                title: const Text('Personal Details'),
-                onTap: () {},
+                title: const Text('Settings'),
+                onTap: () {
+                 Navigator.of(context, rootNavigator: true).pushNamed(
+                           AppRoutes.setting,
+                  );
+                },
               ),
               BlocConsumer<AuthCubit, AuthState>(
                 bloc: authCubit,
@@ -122,7 +128,7 @@ class ProfilePage extends StatelessWidget {
                       ..showSnackBar(
                         SnackBar(
                           content: Text(state.message),
-                          backgroundColor: Colors.red,
+                          backgroundColor: AppColors.red,
                         ),
                       );
                   } else if (state is AuthInitial) {
@@ -140,8 +146,11 @@ class ProfilePage extends StatelessWidget {
                     );
                   }
                   return ListTile(
-                    leading: const Icon(Icons.exit_to_app),
-                    title: const Text('Logout'),
+                    leading: const Icon(Icons.exit_to_app, color: AppColors.red),
+                    title: const Text(
+                      'Logout',
+                      style: TextStyle(color: AppColors.red),
+                    ),
                     onTap: () async {
                       await authCubit.signOut();
                     },

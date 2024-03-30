@@ -5,6 +5,7 @@ import 'package:ecommerce_app/utils/api_paths.dart';
 abstract class ProfileServices {
   Future<ProfileDetails> getProfile(String id);
   Future<List<ProfileDetails>> getProfiles();
+  Future<ProfileDetails> updateProfile(String id, ProfileDetails data);
 }
 
 class ProfileServicesImpl implements ProfileServices {
@@ -22,4 +23,11 @@ class ProfileServicesImpl implements ProfileServices {
         path: ApiPaths.profile(id),
         builder: (data, documentId) => ProfileDetails.fromMap(data, documentId),
       );
+
+  @override
+  Future<ProfileDetails> updateProfile(String id, ProfileDetails data) async {
+    await firestoreService.setData(path: ApiPaths.profile(id), data: data.toMap());
+
+    return getProfile(id);
+  }
 }
